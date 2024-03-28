@@ -12,7 +12,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import crosstech.aviaassist.R
-import crosstech.aviaassist.utils.DateTimeUtil.Companion.toFormattedString
+import crosstech.aviaassist.utils.toFormattedString
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 

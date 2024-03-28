@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import crosstech.aviaassist.R
 import crosstech.aviaassist.components.AirportComponent
 import crosstech.aviaassist.model.FlightMission
-import crosstech.aviaassist.utils.DateTimeUtil.Companion.toFormattedString
+import crosstech.aviaassist.utils.toFormattedString
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Dictionary
