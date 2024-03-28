@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import crosstech.aviaassist.ui.AviaAssistScreen
 import crosstech.aviaassist.ui.theme.AviaAssistTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,25 +20,9 @@ class MainActivity : ComponentActivity() {
             AviaAssistTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    Greeting("Android")
+                    AviaAssistScreen()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AviaAssistTheme {
-        Greeting("Android")
     }
 }
