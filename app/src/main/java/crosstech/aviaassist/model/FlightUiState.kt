@@ -1,5 +1,7 @@
 package crosstech.aviaassist.model
 
+import java.time.LocalDate
+
 data class FlightUiState(
-    val missionsByDate: List<FlightMission>
+    val missionsByDate: Map<LocalDate, List<FlightMission>> = mapOf()
 )
