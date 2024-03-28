@@ -51,12 +51,14 @@ fun DailyMission(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = missions.key.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
+            text = missions.key.toFormattedString(),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.padding_small))
         )
         Column(
 
