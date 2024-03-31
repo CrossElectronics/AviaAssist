@@ -136,13 +136,13 @@ fun DailyMission(
             }
 
             AnimatedVisibility (isExpanded) {
-                val totalPaidMinute = missions.value.sumOf { it.durationInMinutes }
+                val totalPaidMinute = missions.value.sumOf { it.durationInMinutes * it.multiplier }
                 val income = totalPaidMinute / 60.0 * incomePerHour
                 Column {
                     HorizontalLabel(
                         title = "当日计费小时",
                         content = {
-                            Text(text = totalPaidMinute.toFormattedString())
+                            Text(text = totalPaidMinute.toInt().toFormattedString())
                         },
                         modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_tiny))
                     )
