@@ -41,6 +41,7 @@ fun AviaAssistScreen(
     flightViewModel: FlightViewModel = viewModel()
 ) {
     val clipboardManager = LocalClipboardManager.current
+    val uiState by flightViewModel.uiState.collectAsState()
     flightViewModel.initFlightDataAndAirportMap(LocalContext.current)
     Scaffold(
         modifier = Modifier,
@@ -55,7 +56,6 @@ fun AviaAssistScreen(
             }
         }
     ) {
-        val uiState by flightViewModel.uiState.collectAsState()
         // TODO: temporarily set to flight page
         FlightScreen(
             uiState.missionsByDate,

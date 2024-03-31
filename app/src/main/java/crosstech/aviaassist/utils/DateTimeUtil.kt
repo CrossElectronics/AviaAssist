@@ -13,3 +13,9 @@ fun LocalTime.toFormattedString():String {
 fun LocalDate.toFormattedString(): String{
     return this.format(DATE_FORMAT)
 }
+
+fun Int.toFormattedString(): String{
+    val hour = this / 60
+    val min = this - hour * 60
+    return String.format("%02d:%02d", hour, min)
+}

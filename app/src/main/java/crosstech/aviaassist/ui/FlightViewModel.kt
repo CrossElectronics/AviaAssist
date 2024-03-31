@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import crosstech.aviaassist.R
+import crosstech.aviaassist.model.EvaluatedMission
 import crosstech.aviaassist.model.FlightData
 import crosstech.aviaassist.model.FlightMission
 import crosstech.aviaassist.model.FlightUiState
@@ -24,7 +25,14 @@ class FlightViewModel : ViewModel() {
 
     fun uploadMissionsGroupedByDate(missionsText: String) {
         val missions: List<FlightMission> = FlightMission.parseListFromString(missionsText)
-        val groupedMission = missions.groupBy { it.takeoffDateTime.toLocalDate() }
+        val evaluatedMissions: MutableList<EvaluatedMission> = mutableListOf()
+
+        for (mission in missions){
+            val evaluatedMission = mission evaluateBy flightDataList
+            evaluatedMissions.add(evaluatedMission)
+        }
+
+        val groupedMission = evaluatedMissions.groupBy { it.takeoffDateTime.toLocalDate() }
         _uiState.update {
             it.copy(missionsByDate = groupedMission)
         }

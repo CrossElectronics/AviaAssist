@@ -5,7 +5,7 @@ import org.junit.Test
 import org.junit.Assert.*
 
 class FlightDataUnitTest {
-    val raw = buildString {
+    private val raw = buildString {
         appendLine("杭州,HGH,北京,PEK,319,1.20,136.00")
         appendLine("杭州,HGH,北京,PEK,320,1.20,136.00")
         appendLine("杭州,HGH,北京,PEK,737,1.20,136.00")
