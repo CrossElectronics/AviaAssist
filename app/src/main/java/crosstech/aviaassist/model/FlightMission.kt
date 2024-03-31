@@ -14,6 +14,9 @@ data class FlightMission(
     val destAirport: String
 ) {
     companion object {
+        /**
+         * Parses a list of FlightMissions from [missionString] using pb command pasted from user
+         */
         fun parseListFromString(missionString: String): List<FlightMission> {
             val flightMissions = mutableListOf<FlightMission>()
             val lines = missionString.lines()
