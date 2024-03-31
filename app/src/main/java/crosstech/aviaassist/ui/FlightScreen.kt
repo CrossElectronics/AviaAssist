@@ -111,7 +111,9 @@ fun MissionCard(
             ) {
                 Text(
                     text = mission.flightNumber,
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(bottom = dimensionResource(id = R.dimen.padding_tiny))
                 )
                 CapsuleWithLineInMiddle(
                     text = mission.getDurationAsString()

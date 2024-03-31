@@ -106,7 +106,7 @@ fun AirportComponentPreview() {
         Capsule(
             text = text,
             modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.padding_small))
+                .padding(horizontal = dimensionResource(id = R.dimen.padding_small))
                 .align(Alignment.Center)
         )
     }
