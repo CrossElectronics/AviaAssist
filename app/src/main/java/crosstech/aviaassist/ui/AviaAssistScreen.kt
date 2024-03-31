@@ -3,6 +3,7 @@ package crosstech.aviaassist.ui
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,17 +13,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentPasteGo
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -33,9 +42,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import crosstech.aviaassist.R
+import crosstech.aviaassist.components.SnackbarVisualsWithError
 import crosstech.aviaassist.ui.theme.AviaAssistTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun AviaAssistScreen(
@@ -43,16 +55,57 @@ fun AviaAssistScreen(
 ) {
     val clipboardManager = LocalClipboardManager.current
     val uiState by flightViewModel.uiState.collectAsState()
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     flightViewModel.initFlightDataAndAirportMap(LocalContext.current)
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState){ data ->
+                val isError = (data.visuals as? SnackbarVisualsWithError)?.isError ?: false
+                val buttonColor = if (isError) {
+                    ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                } else {
+                    ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.inversePrimary
+                    )
+                }
+
+                Snackbar(
+                    modifier = Modifier
+                        .padding(12.dp),
+                    containerColor = MaterialTheme.colorScheme.error,
+                    action = {
+                        TextButton(onClick = { data.dismiss() }) {
+                            Text("OK", color = MaterialTheme.colorScheme.onError)
+                        }
+                    }
+                ) {
+                    Text(data.visuals.message, color = MaterialTheme.colorScheme.onError)
+                }
+            }
+        },
         modifier = Modifier,
         topBar = { AviaAssistTopBar() },
         bottomBar = {},
         floatingActionButton = {
             AviaAssistFab {
                 val text = clipboardManager.getText()?.text
-                if (text != null) {
-                    flightViewModel.uploadMissionsGroupedByDate(text)
+                try {
+                    if (text != null) {
+                        flightViewModel.uploadMissionsGroupedByDate(text)
+                    }
+                } catch (_: Exception) {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            SnackbarVisualsWithError(
+                                "无法解析粘贴内容",
+                                isError = true
+                            )
+                        )
+                    }
                 }
             }
         }
