@@ -23,5 +23,11 @@ data class FlightData(
                 paidTimeMultiplier = split[5].toDouble()
             )
         }
+
+        fun parseAirports(flightData: String): Pair<Pair<String, String>, Pair<String, String>>? {
+            val split = flightData.split(',')
+            return if (split.size != 7) null
+            else Pair(Pair(split[0], split[1]), Pair(split[2], split[3]))
+        }
     }
 }

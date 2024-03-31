@@ -19,6 +19,7 @@ class FlightViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(FlightUiState())
     val uiState: StateFlow<FlightUiState> = _uiState.asStateFlow()
     lateinit var flightDataList: List<FlightData>
+    lateinit var airportMap: Map<String, String>
 
     fun uploadMissionsGroupedByDate(missionsText: String){
         val missions: List<FlightMission> = FlightMission.parseListFromString(missionsText)
@@ -28,17 +29,29 @@ class FlightViewModel: ViewModel() {
         }
     }
 
-    fun initFlightData(context: Context){
+    fun initFlightDataAndAirportMap(context: Context){
         val documentStream = context.resources.openRawResource(R.raw.flight_data)
         val bufferedReader = BufferedReader(InputStreamReader(documentStream))
 
-        val flightData = mutableListOf<FlightData>()
+        val flightDataMutableList = mutableListOf<FlightData>()
+        val airports = mutableMapOf<String, String>()
         try {
             var line: String? = bufferedReader.readLine()
             while (line != null) {
                 val fltDatum = FlightData.parseFromString(line)
                 if (fltDatum != null) {
-                    flightData.add(fltDatum)
+                    flightDataMutableList.add(fltDatum)
+                }
+                val airportPair = FlightData.parseAirports(line)
+                if (!airports.containsKey(airportPair?.first?.first)){
+                    if (airportPair != null) {
+                        airports[airportPair.first.first] = airportPair.first.second
+                    }
+                }
+                if (!airports.containsKey(airportPair?.second?.first)){
+                    if (airportPair != null) {
+                        airports[airportPair.second.first] = airportPair.second.second
+                    }
                 }
                 // Next line
                 line = bufferedReader.readLine()
@@ -55,6 +68,7 @@ class FlightViewModel: ViewModel() {
                 Log.e("FlightData", "Error closing resources: ${e.message}")
             }
         }
-        flightDataList = flightData
+        flightDataList = flightDataMutableList
+        airportMap = airports
     }
 }

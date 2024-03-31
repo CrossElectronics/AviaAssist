@@ -28,9 +28,25 @@ class FlightDataUnitTest {
     fun flightData_Init_Success() {
         val rawList = raw.split("\n")
         val data = mutableListOf<FlightData>()
-        for(str in rawList){
+        for (str in rawList) {
             FlightData.parseFromString(str)?.let { data.add(it) }
         }
         assertEquals(rawList.size, data.size)
+    }
+
+    @Test fun airports_Init_Success() {
+        val rawList = raw.split("\n")
+        val data = mutableMapOf<String, String>()
+        for (str in rawList) {
+            FlightData.parseAirports(str)?.let {
+                if (!data.containsKey(it.first.first)) {
+                    data[it.first.first] = it.first.second
+                }
+                if (!data.containsKey(it.second.first)) {
+                    data[it.second.first] = it.second.second
+                }
+            }
+        }
+        assertEquals(11, data.size)
     }
 }
