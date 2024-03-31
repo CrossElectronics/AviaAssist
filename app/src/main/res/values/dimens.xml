@@ -3,6 +3,7 @@
     <dimen name="padding_tiny">4dp</dimen>
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">16dp</dimen>
+    <dimen name="bottom_clearance">64dp</dimen>
     <dimen name="rounded_corner_rad">16dp</dimen>
     <dimen name="elevation_shallow">2dp</dimen>
     <dimen name="image_size">64dp</dimen>

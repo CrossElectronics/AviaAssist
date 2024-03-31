@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import crosstech.aviaassist.R
 import crosstech.aviaassist.components.AirportComponent
 import crosstech.aviaassist.components.CapsuleWithLineInMiddle
@@ -45,14 +48,17 @@ fun FlightScreen(
     airports: Map<String, String>,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small)),
-    ) {
-        for (missions in missionsByDate) {
-            item {
-                DailyMission(missions = missions, airports = airports)
+    Column {
+        LazyColumn(
+            modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small)),
+        ) {
+            for (missions in missionsByDate) {
+                item {
+                    DailyMission(missions = missions, airports = airports)
+                }
             }
         }
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_clearance)))
     }
 }
 
@@ -90,6 +96,7 @@ fun DailyMission(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MissionCard(
     mission: EvaluatedMission,
@@ -103,7 +110,8 @@ fun MissionCard(
 
     ElevatedCard(
         modifier = modifier
-            .padding(dimensionResource(id = R.dimen.padding_small))
+            .padding(dimensionResource(id = R.dimen.padding_small)),
+        onClick = { isExpanded = !isExpanded }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -151,7 +159,7 @@ fun MissionCard(
                 )
                 Row(modifier = Modifier.weight(0.5f)) {
                     Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { isExpanded = !isExpanded },) {
+                    IconButton(onClick = { isExpanded = !isExpanded }) {
                         Icon(if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, null)
                     }
                 }
@@ -171,6 +179,9 @@ fun MissionCard(
 @Preview
 @Composable
 fun MissionCardPreview() {
+    var isExpanded by rememberSaveable {
+        mutableStateOf(false)
+    }
     val flt = FlightMission.parseListFromString("【2024-3-29】\nCA1740/B-1876  CTU09:15-11:55HGH")[0]
     MissionCard(mission = flt evaluateBy listOf(), mapOf())
 }
