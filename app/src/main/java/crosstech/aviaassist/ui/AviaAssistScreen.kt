@@ -37,6 +37,7 @@ fun AviaAssistScreen(
         // TODO: temporarily set to flight page
         FlightScreen(
             uiState.missionsByDate,
+            uiState.airports,
             modifier = Modifier
                 .padding(it)
         )

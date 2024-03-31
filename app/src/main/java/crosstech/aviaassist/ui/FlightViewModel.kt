@@ -45,10 +45,10 @@ class FlightViewModel : ViewModel() {
                 }
 
                 FlightData.parseAirports(line)?.let {
-                    if (!airports.containsKey(it.first.first))
-                        airports[it.first.first] = it.first.second
-                    if (!airports.containsKey(it.second.first))
-                        airports[it.second.first] = it.second.second
+                    if (!airports.containsKey(it.first.second))
+                        airports[it.first.second] = it.first.first
+                    if (!airports.containsKey(it.second.second))
+                        airports[it.second.second] = it.second.first
                 }
                 // Next line
                 line = bufferedReader.readLine()
@@ -67,5 +67,9 @@ class FlightViewModel : ViewModel() {
         }
         flightDataList = flightDataMutableList
         airportMap = airports
+
+        _uiState.update {
+            it.copy(airports = airportMap)
+        }
     }
 }
