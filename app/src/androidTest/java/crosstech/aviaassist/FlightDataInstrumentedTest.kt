@@ -17,19 +17,25 @@ import org.junit.Assert.*
  */
 @RunWith(AndroidJUnit4::class)
 class FlightDataInstrumentedTest {
-    @Test
-    fun useAppContext() {
+    @Test fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("crosstech.aviaassist", appContext.packageName)
     }
 
-    @Test
-    fun flightData_Initialization_Successful(){
+    @Test fun flightData_Initialization_Successful(){
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val flightVM = FlightViewModel()
-        flightVM.initFlightData(context)
+        flightVM.initFlightDataAndAirportMap(context)
         Log.d("TEST", flightVM.flightDataList.size.toString())
         assertNotEquals(0, flightVM.flightDataList.size)
+    }
+
+    @Test fun airports_Initialization_Successful(){
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val flightVM = FlightViewModel()
+        flightVM.initFlightDataAndAirportMap(context)
+        Log.d("TEST", flightVM.airportMap.size.toString())
+        assertNotEquals(0, flightVM.airportMap.size)
     }
 }

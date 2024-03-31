@@ -44,9 +44,9 @@ class FlightViewModel : ViewModel() {
                 }
 
                 FlightData.parseAirports(line)?.let {
-                    if (airports.containsKey(it.first.first))
+                    if (!airports.containsKey(it.first.first))
                         airports[it.first.first] = it.first.second
-                    if (airports.containsKey(it.second.first))
+                    if (!airports.containsKey(it.second.first))
                         airports[it.second.first] = it.second.second
                 }
                 // Next line
