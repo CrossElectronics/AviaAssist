@@ -1,18 +1,19 @@
 package crosstech.aviaassist.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
@@ -23,19 +24,22 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import crosstech.aviaassist.R
 import crosstech.aviaassist.components.AirportComponent
 import crosstech.aviaassist.components.CapsuleWithLineInMiddle
+import crosstech.aviaassist.components.HorizontalLabel
 import crosstech.aviaassist.components.PaidTimeWidget
 import crosstech.aviaassist.model.EvaluatedMission
 import crosstech.aviaassist.model.FlightMission
@@ -48,17 +52,49 @@ fun FlightScreen(
     airports: Map<String, String>,
     modifier: Modifier = Modifier
 ) {
+    var textInput by rememberSaveable { mutableStateOf("160") }
+    var incomePerHour by rememberSaveable { mutableDoubleStateOf(160.0) }
     Column {
         LazyColumn(
-            modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small)),
+            modifier = modifier.padding(
+                horizontal = dimensionResource(id = R.dimen.padding_small),
+            ),
         ) {
+            item {
+                TextField(
+                    value = textInput,
+                    onValueChange = {
+                        textInput = it
+                        incomePerHour = it.toDoubleOrNull() ?: 160.0
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(id = R.dimen.padding_small)),
+                    label = {
+                        Text(text = "小时费", style = MaterialTheme.typography.labelSmall)
+                    },
+                    leadingIcon = {
+                        Icon(Icons.Default.AttachMoney, null)
+                    },
+                    suffix = {
+                        Text(text = "CNY/h")
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
+                    ),
+                )
+            }
             for (missions in missionsByDate) {
                 item {
-                    DailyMission(missions = missions, airports = airports)
+                    DailyMission(
+                        missions = missions,
+                        airports = airports,
+                        incomePerHour = incomePerHour,
+                        modifier = Modifier
+                    )
                 }
             }
         }
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_clearance)))
     }
 }
 
@@ -67,24 +103,63 @@ fun DailyMission(
     missions: Map.Entry<LocalDate, List<EvaluatedMission>>,
     airports: Map<String, String>,
     modifier: Modifier = Modifier,
+    incomePerHour: Double,
 ) {
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
     Card(
         elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.elevation_shallow)),
-        modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small))
-    ) {
-        Column(
-            modifier = Modifier
-        ) {
-            Text(
-                text = missions.key.toFormattedString(),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier
-                    .padding(
-                        start = dimensionResource(id = R.dimen.padding_medium),
-                        top = dimensionResource(id = R.dimen.padding_medium),
-                        bottom = dimensionResource(id = R.dimen.padding_small)
-                    )
+        modifier = modifier
+            .animateContentSize(
+                spring(
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessMedium
+                )
             )
+            .padding(dimensionResource(id = R.dimen.padding_small)),
+    ) {
+        Column {
+            Row {
+                Text(
+                    text = missions.key.toFormattedString(),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .padding(
+                            start = dimensionResource(id = R.dimen.padding_medium),
+                            top = dimensionResource(id = R.dimen.padding_medium),
+                            bottom = dimensionResource(id = R.dimen.padding_small)
+                        )
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = { isExpanded = !isExpanded }) {
+                    Icon(if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, null)
+                }
+            }
+
+            AnimatedVisibility (isExpanded) {
+                val totalPaidMinute = missions.value.sumOf { it.durationInMinutes }
+                val income = totalPaidMinute / 60.0 * incomePerHour
+                Column {
+                    HorizontalLabel(
+                        title = "当日计费小时",
+                        content = {
+                            Text(text = totalPaidMinute.toFormattedString())
+                        },
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_tiny))
+                    )
+                    HorizontalLabel(
+                        title = "预计收入",
+                        content = {
+                            Text(
+                                text = String.format("%.2f CNY", income),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                        },
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_tiny)),
+                        verticalAlignment = Alignment.Top
+                    )
+                }
+            }
+
             Column(
                 modifier = Modifier
             ) {
@@ -115,12 +190,7 @@ fun MissionCard(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.animateContentSize(
-                spring(
-                    dampingRatio = Spring.DampingRatioNoBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            ),
+            modifier = Modifier
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -165,7 +235,7 @@ fun MissionCard(
                 }
             }
 
-            if (isExpanded) {
+            AnimatedVisibility (isExpanded) {
                 PaidTimeWidget(
                     time = mission.durationInMinutes,
                     multiplier = mission.multiplier,

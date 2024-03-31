@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -198,8 +199,7 @@ fun PaidTimePreviewWrong() {
     PaidTimeWidget(time = 150, multiplier = 1.2, reliable = false)
 }
 
-@Composable
-fun VerticalLabel(
+@Composable fun VerticalLabel(
     title: String,
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier
@@ -215,6 +215,28 @@ fun VerticalLabel(
             modifier = Modifier
                 .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
+        content()
+    }
+}
+
+@Composable fun HorizontalLabel(
+    title: String,
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically
+){
+    Row(
+        verticalAlignment = verticalAlignment,
+        modifier = modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.padding_small))
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier
+                .padding(bottom = dimensionResource(R.dimen.padding_small))
+        )
+        Spacer(modifier = Modifier.weight(1f))
         content()
     }
 }
