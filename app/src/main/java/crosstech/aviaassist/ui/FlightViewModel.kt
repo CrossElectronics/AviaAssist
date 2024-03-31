@@ -18,6 +18,7 @@ import java.io.InputStreamReader
 class FlightViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(FlightUiState())
     val uiState: StateFlow<FlightUiState> = _uiState.asStateFlow()
+    // TODO: isolate vars and only provide readable val
     lateinit var flightDataList: List<FlightData>
     lateinit var airportMap: Map<String, String>
 

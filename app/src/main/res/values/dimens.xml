@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">16dp</dimen>
+    <dimen name="rounded_corner_rad">16dp</dimen>
+    <dimen name="elevation_shallow">2dp</dimen>
 </resources>

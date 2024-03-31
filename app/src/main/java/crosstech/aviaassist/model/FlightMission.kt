@@ -4,6 +4,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.Duration
 
 data class FlightMission(
     val flightNumber: String,
@@ -13,6 +14,18 @@ data class FlightMission(
     val originAirport: String,
     val destAirport: String
 ) {
+    fun getDurationAsString(): String {
+        val duration = getDuration()
+        val hours = duration.toHours()
+        val minutes = duration.toMinutes() - 60 * hours
+
+        // Format the duration as HH:mm
+        return String.format("%02d:%02d", hours, minutes)
+    }
+
+    fun getDuration(): Duration{
+        return Duration.between(takeoffDateTime, landingDateTime)
+    }
     companion object {
         /**
          * Parses a list of FlightMissions from [missionString] using pb command pasted from user

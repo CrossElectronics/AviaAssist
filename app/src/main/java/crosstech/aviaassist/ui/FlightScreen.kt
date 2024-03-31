@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import crosstech.aviaassist.R
 import crosstech.aviaassist.components.AirportComponent
+import crosstech.aviaassist.components.CapsuleWithLineInMiddle
 import crosstech.aviaassist.model.FlightMission
 import crosstech.aviaassist.utils.toFormattedString
 import java.time.LocalDate
@@ -50,21 +54,29 @@ fun DailyMission(
     missions: Map.Entry<LocalDate, List<FlightMission>>,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Card(
+        elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.elevation_shallow)),
+        modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small))
     ) {
-        Text(
-            text = missions.key.toFormattedString(),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.padding_small))
-        )
         Column(
-
+            modifier = Modifier
         ) {
-            for (mission in missions.value) {
-                MissionCard(mission = mission)
+            Text(
+                text = missions.key.toFormattedString(),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .padding(
+                        start = dimensionResource(id = R.dimen.padding_medium),
+                        top = dimensionResource(id = R.dimen.padding_medium),
+                        bottom = dimensionResource(id = R.dimen.padding_small)
+                    )
+            )
+            Column(
+                modifier = Modifier
+            ) {
+                for (mission in missions.value) {
+                    MissionCard(mission = mission)
+                }
             }
         }
     }
@@ -75,7 +87,7 @@ fun MissionCard(
     mission: FlightMission,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    ElevatedCard(
         modifier = modifier
             .padding(dimensionResource(id = R.dimen.padding_small))
     ) {
@@ -91,18 +103,35 @@ fun MissionCard(
                 modifier = Modifier
                     .weight(2f)
             )
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = null,
+            Column(
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
-                    .size(48.dp)
-                    .weight(1f)
-            )
+                    .weight(2f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = mission.flightNumber,
+                    style = MaterialTheme.typography.labelMedium
+                )
+                CapsuleWithLineInMiddle(
+                    text = mission.getDurationAsString()
+                )
+            }
+
+
+//            Icon(
+//                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .padding(dimensionResource(id = R.dimen.padding_small))
+//                    .size(48.dp)
+//                    .weight(1f)
+//            )
             AirportComponent(
                 airportCode = mission.destAirport,
                 time = mission.landingDateTime.toLocalTime(),
-                modifier = Modifier.weight(2f))
+                modifier = Modifier.weight(2f)
+            )
             Spacer(modifier = Modifier.weight(1f))
         }
     }

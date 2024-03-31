@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
@@ -18,6 +19,7 @@ fun AviaAssistScreen(
     flightViewModel: FlightViewModel = viewModel()
 ) {
     val clipboardManager = LocalClipboardManager.current
+    flightViewModel.initFlightDataAndAirportMap(LocalContext.current)
     Scaffold(
         modifier = Modifier,
         topBar = { AviaAssistTopBar() },
