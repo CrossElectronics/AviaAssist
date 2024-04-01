@@ -12,5 +12,4 @@ class EvaluatedMission(
     val durationInMinutes: Int,
     val multiplier: Double,
     val isAuthentic: Boolean
-) : FlightMission(flightNumber, aircraftReg, takeoffDateTime, landingDateTime, originAirport, destAirport) {
-}
+) : FlightMission(flightNumber, aircraftReg, takeoffDateTime, landingDateTime, originAirport, destAirport)

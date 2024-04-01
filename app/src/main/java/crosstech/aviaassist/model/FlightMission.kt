@@ -9,7 +9,7 @@ import java.time.Duration
 
 open class FlightMission(
     val flightNumber: String,
-    val aircraftReg: String,
+    private val aircraftReg: String,
     val takeoffDateTime: LocalDateTime,
     val landingDateTime: LocalDateTime,
     val originAirport: String,
@@ -19,8 +19,6 @@ open class FlightMission(
         val duration = getDuration()
         val hours = duration.toHours()
         val minutes = duration.toMinutes() - 60 * hours
-
-        // Format the duration as HH:mm
         return String.format("%02d:%02d", hours, minutes)
     }
 
@@ -28,12 +26,13 @@ open class FlightMission(
         val pickedDatum = flightData
             .filter { it.originAirportCode == this.originAirport && it.destAirportCode == this.destAirport }
             .sortedBy { it.paidTime }
-            .sortedBy { AIRCRAFT_TYPE_PRIORITY[it.aircraftType] }
+            .sortedBy { AIRCRAFT_TYPE_PRIORITY[it.aircraftType] } // Prioritize 32x and 73x data
         val length = getDuration().toMinutes().toInt()
         // Multiplier calculation
         var multi = 1.0
         if (pickedDatum.isEmpty()) {
-            if (length < 150) multi += 0.2
+            if (length <= 150) multi += 0.2
+            // TODO: decide the lowest possible multi for a given airport (difficultyCoeff)
         } else {
             multi = pickedDatum[0].paidTimeMultiplier
         }
@@ -72,7 +71,7 @@ open class FlightMission(
         return takeoffDateTime > dayBegin && takeoffDateTime < sevenOClock || landingDateTime > dayEnd
     }
 
-    fun getDuration(): Duration {
+    private fun getDuration(): Duration {
         return Duration.between(takeoffDateTime, landingDateTime)
     }
 
