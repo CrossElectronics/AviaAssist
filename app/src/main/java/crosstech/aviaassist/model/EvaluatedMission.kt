@@ -13,15 +13,14 @@ class EvaluatedMission(
     originAirport: String,
     destAirport: String,
     val durationInMinutes: Int,
-    private val _multiplier: Double,
-    val isAuthentic: Boolean,
+    val multiplier: Double,
+    val isAuthentic: Boolean
+) : FlightMission(flightNumber, aircraftReg, takeoffDateTime, landingDateTime, originAirport, destAirport) {
     private var _isReplacement: Boolean = false
-) : FlightMission(flightNumber, aircraftReg, takeoffDateTime, landingDateTime, originAirport, destAirport){
-
-    var multiplier by mutableDoubleStateOf(_multiplier)
     val isReplacement = _isReplacement
-    fun setReplacement(isReplacement: Boolean){
+    var multiplierConsideringReplacement by mutableDoubleStateOf(multiplier)
+    fun setReplacement(isReplacement: Boolean) {
         _isReplacement = isReplacement
-        multiplier = if (_isReplacement) 0.5 else _multiplier
+        multiplierConsideringReplacement = if (_isReplacement) 0.5 else multiplier
     }
 }

@@ -141,7 +141,7 @@ fun DailyMission(
             }
 
             AnimatedVisibility(isExpanded) {
-                val totalPaidMinute = missions.value.sumOf { it.durationInMinutes * it.multiplier }
+                val totalPaidMinute = missions.value.sumOf { it.durationInMinutes * it.multiplierConsideringReplacement }
                 val income = totalPaidMinute / 60.0 * incomePerHour
                 Column {
                     HorizontalLabel(
@@ -248,7 +248,7 @@ fun MissionCard(
                 ) {
                     PaidTimeWidget(
                         time = mission.durationInMinutes,
-                        multiplier = mission.multiplier,
+                        multiplier = mission.multiplierConsideringReplacement,
                         reliable = mission.isAuthentic
                     )
                     HorizontalLabel(
