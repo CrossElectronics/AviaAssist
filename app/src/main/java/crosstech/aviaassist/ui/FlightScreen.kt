@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import crosstech.aviaassist.R
@@ -73,13 +74,13 @@ fun FlightScreen(
                         .fillMaxWidth()
                         .padding(dimensionResource(id = R.dimen.padding_small)),
                     label = {
-                        Text(text = "小时费", style = MaterialTheme.typography.labelSmall)
+                        Text(text = stringResource(R.string.income_per_hour), style = MaterialTheme.typography.labelSmall)
                     },
                     leadingIcon = {
                         Icon(Icons.Default.AttachMoney, null)
                     },
                     suffix = {
-                        Text(text = "CNY/h")
+                        Text(text = stringResource(R.string.cny_h))
                     },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number
@@ -144,17 +145,17 @@ fun DailyMission(
                 val income = totalPaidMinute / 60.0 * incomePerHour
                 Column {
                     HorizontalLabel(
-                        title = "当日计费小时",
+                        title = stringResource(R.string.paid_hour_today),
                         content = {
                             Text(text = totalPaidMinute.toInt().toFormattedString())
                         },
                         modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_tiny))
                     )
                     HorizontalLabel(
-                        title = "预计收入",
+                        title = stringResource(R.string.est_income),
                         content = {
                             Text(
-                                text = String.format("%.2f CNY", income),
+                                text = String.format(stringResource(R.string._2f_cny), income),
                                 style = MaterialTheme.typography.titleLarge
                             )
                         },
@@ -251,7 +252,7 @@ fun MissionCard(
                         reliable = mission.isAuthentic
                     )
                     HorizontalLabel(
-                        title = "标记为置位",
+                        title = stringResource(R.string.mark_as_replacement),
                         content = {
                             Switch(checked = isReplacementChecked, onCheckedChange = {
                                 isReplacementChecked = !isReplacementChecked
@@ -269,9 +270,6 @@ fun MissionCard(
 @Preview
 @Composable
 fun MissionCardPreview() {
-    var isExpanded by rememberSaveable {
-        mutableStateOf(false)
-    }
     val flt = FlightMission.parseListFromString("【2024-3-29】\nCA1740/B-1876  CTU09:15-11:55HGH")[0]
     MissionCard(mission = flt evaluateBy listOf(), mapOf(), {_, _ -> })
 }

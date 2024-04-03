@@ -72,7 +72,7 @@ open class FlightMission(
         return takeoffDateTime > dayBegin && takeoffDateTime < sevenOClock || landingDateTime > dayEnd
     }
 
-    fun getDuration(): Duration {
+    private fun getDuration(): Duration {
         return Duration.between(takeoffDateTime, landingDateTime)
     }
 

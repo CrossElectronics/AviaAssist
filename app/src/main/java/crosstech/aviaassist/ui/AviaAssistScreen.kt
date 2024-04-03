@@ -50,6 +50,7 @@ fun AviaAssistScreen(
     val uiState by flightViewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
     flightViewModel.initFlightDataAndAirportMap(LocalContext.current)
     Scaffold(
         snackbarHost = {
@@ -94,7 +95,7 @@ fun AviaAssistScreen(
                     scope.launch {
                         snackbarHostState.showSnackbar(
                             SnackbarVisualsWithError(
-                                "无法解析粘贴内容",
+                                context.getString(R.string.cannot_resolve_pasted_content),
                                 isError = true
                             )
                         )
