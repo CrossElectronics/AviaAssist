@@ -19,18 +19,16 @@ import java.io.InputStreamReader
 class FlightViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(FlightUiState())
     val uiState: StateFlow<FlightUiState> = _uiState.asStateFlow()
-
-    private lateinit var _flightDataList: List<FlightData>
-    private lateinit var _airportMap: Map<String, String>
-    val flightDataList = _flightDataList
-    val airportMap = _airportMap
+    // TODO: isolate vars and only provide readable val
+    lateinit var flightDataList: List<FlightData>
+    lateinit var airportMap: Map<String, String>
 
     fun uploadMissionsGroupedByDate(missionsText: String) {
         val missions: List<FlightMission> = FlightMission.parseListFromString(missionsText)
         val evaluatedMissions: MutableList<EvaluatedMission> = mutableListOf()
 
         for (mission in missions){
-            val evaluatedMission = mission evaluateBy _flightDataList
+            val evaluatedMission = mission evaluateBy flightDataList
             evaluatedMissions.add(evaluatedMission)
         }
 
@@ -75,11 +73,11 @@ class FlightViewModel : ViewModel() {
                 Log.e("FlightData", "Error closing resources: ${e.message}")
             }
         }
-        _flightDataList = flightDataMutableList
-        _airportMap = airports
+        flightDataList = flightDataMutableList
+        airportMap = airports
 
         _uiState.update {
-            it.copy(airports = _airportMap)
+            it.copy(airports = airportMap)
         }
     }
 }
