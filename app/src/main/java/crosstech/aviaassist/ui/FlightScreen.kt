@@ -23,6 +23,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -50,6 +51,7 @@ import java.time.LocalDate
 fun FlightScreen(
     missionsByDate: Map<LocalDate, List<EvaluatedMission>>,
     airports: Map<String, String>,
+    onReplacementStatusChanged: (EvaluatedMission, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var textInput by rememberSaveable { mutableStateOf("160") }
@@ -90,6 +92,7 @@ fun FlightScreen(
                         missions = missions,
                         airports = airports,
                         incomePerHour = incomePerHour,
+                        onReplacementStatusChanged = onReplacementStatusChanged,
                         modifier = Modifier
                     )
                 }
@@ -103,6 +106,7 @@ fun DailyMission(
     missions: Map.Entry<LocalDate, List<EvaluatedMission>>,
     airports: Map<String, String>,
     modifier: Modifier = Modifier,
+    onReplacementStatusChanged: (EvaluatedMission, Boolean) -> Unit,
     incomePerHour: Double,
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
@@ -135,7 +139,7 @@ fun DailyMission(
                 }
             }
 
-            AnimatedVisibility (isExpanded) {
+            AnimatedVisibility(isExpanded) {
                 val totalPaidMinute = missions.value.sumOf { it.durationInMinutes * it.multiplier }
                 val income = totalPaidMinute / 60.0 * incomePerHour
                 Column {
@@ -164,7 +168,7 @@ fun DailyMission(
                 modifier = Modifier
             ) {
                 for (mission in missions.value) {
-                    MissionCard(mission = mission, airports = airports)
+                    MissionCard(mission = mission, airports = airports, onReplacementStatusChanged)
                 }
             }
         }
@@ -176,12 +180,14 @@ fun DailyMission(
 fun MissionCard(
     mission: EvaluatedMission,
     airports: Map<String, String>,
+    onReplacementStatusChanged: (EvaluatedMission, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val origAirportName = if (airports.containsKey(mission.originAirport)) airports[mission.originAirport] else ""
     val destAirportName = if (airports.containsKey(mission.destAirport)) airports[mission.destAirport] else ""
 
     var isExpanded by rememberSaveable { mutableStateOf(false) }
+    var isReplacementChecked by rememberSaveable { mutableStateOf(mission.isReplacement) }
 
     ElevatedCard(
         modifier = modifier
@@ -235,12 +241,26 @@ fun MissionCard(
                 }
             }
 
-            AnimatedVisibility (isExpanded) {
-                PaidTimeWidget(
-                    time = mission.durationInMinutes,
-                    multiplier = mission.multiplier,
-                    reliable = mission.isAuthentic
-                )
+            AnimatedVisibility(isExpanded) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    PaidTimeWidget(
+                        time = mission.durationInMinutes,
+                        multiplier = mission.multiplier,
+                        reliable = mission.isAuthentic
+                    )
+                    HorizontalLabel(
+                        title = "标记为置位",
+                        content = {
+                            Switch(checked = isReplacementChecked, onCheckedChange = {
+                                isReplacementChecked = !isReplacementChecked
+                                onReplacementStatusChanged(mission, it)
+                            })
+                        },
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
+                    )
+                }
             }
         }
     }
@@ -253,7 +273,7 @@ fun MissionCardPreview() {
         mutableStateOf(false)
     }
     val flt = FlightMission.parseListFromString("【2024-3-29】\nCA1740/B-1876  CTU09:15-11:55HGH")[0]
-    MissionCard(mission = flt evaluateBy listOf(), mapOf())
+    MissionCard(mission = flt evaluateBy listOf(), mapOf(), {_, _ -> })
 }
 
 @Preview(showBackground = true)
@@ -271,5 +291,5 @@ fun FlightScreenPreview() {
     )
     val evalFlts = mutableListOf<EvaluatedMission>()
     flts.forEach { evalFlts.add(it evaluateBy listOf()) }
-    FlightScreen(missionsByDate = evalFlts.groupBy { it.takeoffDateTime.toLocalDate() }, mapOf())
+    FlightScreen(missionsByDate = evalFlts.groupBy { it.takeoffDateTime.toLocalDate() }, mapOf(), {_, _ -> })
 }

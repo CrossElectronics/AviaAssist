@@ -22,20 +22,33 @@ class FlightViewModel : ViewModel() {
     // TODO: isolate vars and only provide readable val
     lateinit var flightDataList: List<FlightData>
     lateinit var airportMap: Map<String, String>
+    private val evaluatedMissions: MutableList<EvaluatedMission> = mutableListOf()
 
     fun uploadMissionsGroupedByDate(missionsText: String) {
         val missions: List<FlightMission> = FlightMission.parseListFromString(missionsText)
-        val evaluatedMissions: MutableList<EvaluatedMission> = mutableListOf()
 
         for (mission in missions){
             val evaluatedMission = mission evaluateBy flightDataList
             evaluatedMissions.add(evaluatedMission)
         }
 
+        updateMissionUI()
+    }
+
+    private fun updateMissionUI() {
         val groupedMission = evaluatedMissions.groupBy { it.takeoffDateTime.toLocalDate() }
         _uiState.update {
             it.copy(missionsByDate = groupedMission)
         }
+    }
+
+    fun changeMissionReplacementState(mission: EvaluatedMission, state: Boolean){
+        val removeSuccess = evaluatedMissions.remove(mission)
+        if (!removeSuccess) throw Exception("Failed to find the exact mission")
+        mission.setReplacement(state)
+        evaluatedMissions.add(mission)
+        evaluatedMissions.sortBy { it.takeoffDateTime }
+        updateMissionUI()
     }
 
     fun initFlightDataAndAirportMap(context: Context) {
