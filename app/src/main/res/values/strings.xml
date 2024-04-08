@@ -9,4 +9,10 @@
     <string name="_2f_cny">%.2f CNY</string>
     <string name="mark_as_replacement">标记为置位</string>
     <string name="cannot_resolve_pasted_content">无法解析粘贴内容</string>
+    <string name="paid_time">承包时间</string>
+    <string name="coeff">系数</string>
+    <string name="paid_time_considiering_coeff">计费时间</string>
+    <string name="reliability">可靠性</string>
+    <string name="from_timetable">源自码表</string>
+    <string name="calculated">推算</string>
 </resources>

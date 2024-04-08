@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import crosstech.aviaassist.R
@@ -154,32 +155,32 @@ fun PaidTimeWidget(
     val effectiveTime = (time * multiplier).toInt()
     Row {
         VerticalLabel(
-            title = "承包时间",
+            title = stringResource(R.string.paid_time),
             content = { Text(text = time.toFormattedString(), style = MaterialTheme.typography.labelMedium) })
         VerticalLabel(
-            title = "系数",
+            title = stringResource(R.string.coeff),
             content = {
                 Capsule(
                     text = "x$multiplier"
                 )
             })
         VerticalLabel(
-            title = "计费时间",
+            title = stringResource(R.string.paid_time_considiering_coeff),
             content = { Text(text = effectiveTime.toFormattedString(), style = MaterialTheme.typography.labelMedium) }
         )
         VerticalLabel(
-            title = "可靠性",
+            title = stringResource(R.string.reliability),
             content = {
                 if (reliable) {
                     Capsule(
                         icon = Icons.Default.AutoAwesome,
-                        text = "源自码表",
+                        text = stringResource(R.string.from_timetable),
                         outlineColor = colorResource(id = R.color.correct)
                     )
                 } else {
                     Capsule(
                         icon = Icons.Default.QuestionMark,
-                        text = "推算",
+                        text = stringResource(R.string.calculated),
                         outlineColor = colorResource(id = R.color.wrong)
                     )
                 }
