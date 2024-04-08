@@ -14,3 +14,4 @@ val AIRCRAFT_TYPE_PRIORITY = mapOf(
     "777" to 3,
     "787" to 3
 )
+const val NUMBER_ANIMATION_DURATION = 500

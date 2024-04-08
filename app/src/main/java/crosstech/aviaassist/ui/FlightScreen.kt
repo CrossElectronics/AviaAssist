@@ -3,7 +3,9 @@ package crosstech.aviaassist.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +31,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -43,6 +46,7 @@ import crosstech.aviaassist.components.AirportComponent
 import crosstech.aviaassist.components.CapsuleWithLineInMiddle
 import crosstech.aviaassist.components.HorizontalLabel
 import crosstech.aviaassist.components.PaidTimeWidget
+import crosstech.aviaassist.data.NUMBER_ANIMATION_DURATION
 import crosstech.aviaassist.model.EvaluatedMission
 import crosstech.aviaassist.model.FlightMission
 import crosstech.aviaassist.utils.toFormattedString
@@ -74,7 +78,10 @@ fun FlightScreen(
                         .fillMaxWidth()
                         .padding(dimensionResource(id = R.dimen.padding_small)),
                     label = {
-                        Text(text = stringResource(R.string.income_per_hour), style = MaterialTheme.typography.labelSmall)
+                        Text(
+                            text = stringResource(R.string.income_per_hour),
+                            style = MaterialTheme.typography.labelSmall
+                        )
                     },
                     leadingIcon = {
                         Icon(Icons.Default.AttachMoney, null)
@@ -111,6 +118,22 @@ fun DailyMission(
     incomePerHour: Double,
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
+    var totalPaidMinute by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+    var incomeInt by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+    val totalPaidMinuteAnimated by animateIntAsState(
+        targetValue = totalPaidMinute, label = "", animationSpec = tween(
+            NUMBER_ANIMATION_DURATION
+        )
+    )
+    val incomeIntAnimated by animateIntAsState(
+        targetValue = incomeInt, label = "", animationSpec = tween(
+            NUMBER_ANIMATION_DURATION
+        )
+    )
     Card(
         elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.elevation_shallow)),
         modifier = modifier
@@ -141,13 +164,14 @@ fun DailyMission(
             }
 
             AnimatedVisibility(isExpanded) {
-                val totalPaidMinute = missions.value.sumOf { it.durationInMinutes * it.multiplierConsideringReplacement }
-                val income = totalPaidMinute / 60.0 * incomePerHour
+                totalPaidMinute =
+                    missions.value.sumOf { it.durationInMinutes * it.multiplierConsideringReplacement }.toInt()
+                incomeInt = (totalPaidMinute / 60.0 * incomePerHour * 100).toInt()
                 Column {
                     HorizontalLabel(
                         title = stringResource(R.string.paid_hour_today),
                         content = {
-                            Text(text = totalPaidMinute.toInt().toFormattedString())
+                            Text(text = totalPaidMinuteAnimated.toFormattedString())
                         },
                         modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_tiny))
                     )
@@ -155,7 +179,7 @@ fun DailyMission(
                         title = stringResource(R.string.est_income),
                         content = {
                             Text(
-                                text = String.format(stringResource(R.string._2f_cny), income),
+                                text = String.format(stringResource(R.string._2f_cny), incomeIntAnimated / 100.0),
                                 style = MaterialTheme.typography.titleLarge
                             )
                         },
@@ -176,7 +200,6 @@ fun DailyMission(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MissionCard(
     mission: EvaluatedMission,
@@ -242,13 +265,21 @@ fun MissionCard(
                 }
             }
 
+            var multiplierInt by rememberSaveable { mutableIntStateOf(0) }
+            val multiplierAnimated by animateIntAsState(
+                targetValue = multiplierInt, label = "", animationSpec = tween(
+                    NUMBER_ANIMATION_DURATION
+                )
+            )
+
             AnimatedVisibility(isExpanded) {
+                multiplierInt = (mission.multiplierConsideringReplacement * 10).toInt()
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     PaidTimeWidget(
                         time = mission.durationInMinutes,
-                        multiplier = mission.multiplierConsideringReplacement,
+                        multiplier = multiplierAnimated / 10.0,
                         reliable = mission.isAuthentic
                     )
                     HorizontalLabel(
@@ -271,7 +302,7 @@ fun MissionCard(
 @Composable
 fun MissionCardPreview() {
     val flt = FlightMission.parseListFromString("【2024-3-29】\nCA1740/B-1876  CTU09:15-11:55HGH")[0]
-    MissionCard(mission = flt evaluateBy listOf(), mapOf(), {_, _ -> })
+    MissionCard(mission = flt evaluateBy listOf(), mapOf(), { _, _ -> })
 }
 
 @Preview(showBackground = true)
@@ -289,5 +320,5 @@ fun FlightScreenPreview() {
     )
     val evalFlts = mutableListOf<EvaluatedMission>()
     flts.forEach { evalFlts.add(it evaluateBy listOf()) }
-    FlightScreen(missionsByDate = evalFlts.groupBy { it.takeoffDateTime.toLocalDate() }, mapOf(), {_, _ -> })
+    FlightScreen(missionsByDate = evalFlts.groupBy { it.takeoffDateTime.toLocalDate() }, mapOf(), { _, _ -> })
 }
